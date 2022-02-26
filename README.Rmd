@@ -5,6 +5,14 @@ date: "17/02/2022"
 
 ---
 
+install.packages("tidyverse")
+install.packages("reshape2")
+install.packages("ggplot2")
+install.packages("dplyr")
+install.packages("plotly")
+install.packages("viridis")
+install.packages("hrbrthemes")
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
@@ -29,6 +37,7 @@ knitr::knit_hooks$set(chunk = function(x, options) {
 \vspace{0.1in}
 
 ```{r}
+
 library(tidyverse)
 library(ggplot2)
 library(reshape2)
@@ -41,6 +50,18 @@ library(scales)
 
 library(httr)
 set_config(config(ssl_verifypeer = 0L))
+
+```{r}
+library(readxl)
+project <- read_excel("~/Desktop/Assignment_04/AIU All Women Dataset.xlsx")
+View(AIU_All_Women_Dataset)
+
+#Graph 1: Total maternal deaths per 100,000 live births by region
+graph1 <- project %>%
+  group_by(region) %>%
+  summarise(weighted = weighted.mean(rate_matdeaths))
+graph1
+
 library(readxl)
 
 project <- read_excel("~/Desktop/Assignment_04/data/AIU All Women Dataset.xlsx")
@@ -55,6 +76,7 @@ graph1 <- project %>%
   summarise(weighted = weighted.mean(rate_matdeaths))
 
 #Creates a line plot which shows the rate of maternal deaths in each continent(region)
+
 graph1 %>%  
   ggplot(aes(x=region, y=weighted, group = 1)) +
   geom_point(size=3, colour = "red") +
