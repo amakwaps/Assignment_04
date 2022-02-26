@@ -2,9 +2,8 @@
 title: "Assignment_04"
 author: "Priyasha Chawla and Beryl Nana Ama Akuffo-Kwapong"
 date: "17/02/2022"
-output: pdf_document
----
 
+---
 
 install.packages("tidyverse")
 install.packages("reshape2")
@@ -13,6 +12,32 @@ install.packages("dplyr")
 install.packages("plotly")
 install.packages("viridis")
 install.packages("hrbrthemes")
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+
+```
+
+```{r include = FALSE}
+def.chunk.hook  <- knitr::knit_hooks$get("chunk")
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- def.chunk.hook(x, options)
+  ifelse(options$size != "normalsize", paste0("\n \\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
+})
+
+```
+
+\begin{center}
+\Huge{PPOL 670 | Assignment 04}
+
+\Huge{Data Visualization, Markdown, and Git}
+\end{center}
+
+\vspace{0.1in}
+
+```{r}
+
 library(tidyverse)
 library(ggplot2)
 library(reshape2)
@@ -37,6 +62,21 @@ graph1 <- project %>%
   summarise(weighted = weighted.mean(rate_matdeaths))
 graph1
 
+library(readxl)
+
+project <- read_excel("~/Desktop/Assignment_04/data/AIU All Women Dataset.xlsx")
+
+```
+
+
+```{r}
+#Graph 1 - Total maternal deaths per 100,000 live births
+graph1 <- project %>%
+  group_by(region) %>%
+  summarise(weighted = weighted.mean(rate_matdeaths))
+
+#Creates a line plot which shows the rate of maternal deaths in each continent(region)
+
 graph1 %>%  
   ggplot(aes(x=region, y=weighted, group = 1)) +
   geom_point(size=3, colour = "red") +
@@ -45,8 +85,16 @@ graph1 %>%
        caption = "Source: The Guttmacher Institute",
        x = "Region", y = "Maternal deaths per 100,000 live births") +
   theme_minimal()
+```
 
-#Graph 2: Causes of maternal deaths by region   
+Graph 1: Maternal deaths per 100,000 live births by region
+
+It gives a glimpse of the maternal deaths per 100,000 live births by each region. Africa has the highest maternal death rate at 4 deaths per 100,000 live births. The regions with second highest maternal death rate are Latin America and the Caribbean and Asia.  Europe has the lowest maternal death rate. This could be a direct function of the economic development in these regions and, at the same time, leads to severe economic burden on households and negative impact on the Gross Domestic Product.  Research suggests that maternal mortality could lead to fall in GDP by $0.36 per year (Kirgia et all, 2006). This dual cause and effect relationship could worsen any economic advancement effects by developing countries.
+[Source: The Guttmacher Institute](osf.io/m85s9)
+
+
+```{r, fig.height = 20}
+#Graph 2 - percentage of maternal deaths caused by each cause by region 
 graph2 <- project %>%
   mutate_if(is.numeric, round, 2) %>%
   select(continent = region, cause_safeabortion = pct_matdeaths_safeabs, cause_unsafeabortion = pct_matdeaths_unsafeabs, cause_miscarriage = pct_matdeaths_miscar, cause_ectopic = pct_matdeaths_ectopic, cause_hemor = pct_matdeaths_hem, cause_hypertension = pct_matdeaths_hyptn, cause_otherdirect = pct_matdeaths_other, cause_inf = pct_matdeaths_inf, cause_indirect = pct_matdeaths_indirect) %>% 
@@ -61,10 +109,9 @@ graph2 <- project %>%
             weighted.mean(cause_inf),
             weighted.mean(cause_indirect))  %>%
   mutate_if(is.numeric, round, 2)
-graph2
 graph2 <- melt(graph2,  id.vars = 'continent', variable.name = 'series')
-graph2
 
+#Creates a bar graph showing the rates of the various causes of deaths in each region
 ggplot(graph2,aes(x = factor(continent), y = value, fill = series) ) +
   geom_bar(stat="identity", position = 'dodge') +
   geom_text(aes(label=value), position=position_dodge(width=0.9), vjust=-0.01) +
@@ -84,20 +131,28 @@ ggplot(graph2,aes(x = factor(continent), y = value, fill = series) ) +
                                "weighted.mean(cause_inf)" = "Maternal Infection",
                                "weighted.mean(cause_indirect)" = "Indirect Causes")) +
   facet_wrap ( ~continent,
+               ncol = 1,
                scales = "free",
                drop = TRUE,
                shrink = TRUE,
                as.table = TRUE,
                strip.position = "top")
 
+```
 
-#Graph 3: Cost to meet all needs per capita and current cost per capita by number of women in reproductive age and region
+Graph 2:  Percentage of maternal deaths by cause and region
+
+This graph lists out the leading caused of maternal deaths in every region. The data will be instrumental in understanding what interventions are required to minimise maternal deaths in every region. For example, besides other indirect causes, the leading cause of maternal deaths in Africa and Asia is ectopic pregnancies. Ectopic pregnancies occur when a fertilised egg grows outside the uterus. The leading causes are hormonal and genetic abnormalities. Timely testing and preventive care in Africa could bring down number of maternal deaths caused by ectopic pregnancies. In Latin America, the leading cause is hypertension. Awareness programs on causes and care for women with pre-existing high blood pressure and kidney problems would be one plausible policy solution.Other indirect causes (maternal death aggravated by HIV/AIDS) is the leading cause of maternal deaths in Asia and Africa. This cause would need special policy attention.
+[Source: The Guttmacher Institute](osf.io/m85s9)
+
+```{r}
+#Graph 3
+#Groups per capita cost when all needs are met and current cost per capita by number of women in reproductive age and region
 graph3 <- project %>%
   select(country = country, continent = region, wra = wra, cc_cost_per_capita = curr_costs_percap, cost_to_meet_all_needs_percapita = all_costs_percap) %>%
   group_by(continent) %>%
   mutate_if(is.numeric, round, 2)
-graph3
-
+#Creates a bar graph plotting per capita cost when all needs are met and current cost per capita by number of women in reproductive age and region
 graph3 %>%
   ggplot(aes(x=cc_cost_per_capita, y=cost_to_meet_all_needs_percapita, size = wra, color = continent)) +
   geom_point(alpha=0.99) +
@@ -111,43 +166,33 @@ graph3 %>%
   scale_size_continuous(name = "Number of Women in Reproductive Age",
                         limits = c(1000, 100000),
                         range = c(0, 5)) 
+```
 
+Graph 3: Cost to meet all needs per capita and current cost per capita by number of women in reproductive age and region
+
+In the case that interventions could reduce maternal deaths, we compare the current cost structures per capita(that is, how much is being spent on reproductive health care per person) with the cost structures if all needs (of contraceptive care, pregnancy, and new-born care) are met per person. Current per capita cost as well as cost when all needs are met are low for most countries in Europe and Asia. Interestingly, for most countries in Africa, the current cost per capita is on the higher end with some anomalies.
+[Source: The Guttmacher Institute](osf.io/m85s9)
+
+
+```{r}
 #Graph 4
+#Creating a new variable - percentage of women in need/wanting to avoid pregnancy by region
 graph4 <- project %>%
   mutate(percent_avoid= inneed/wra) %>%
   group_by(region) %>%
   summarize(percent_avoid = weighted.mean(percent_avoid))
-graph4
-
+#Creates a lollipop graph showing percentage of women in need/wanting to avoid pregnancy by region
 ggplot(graph4, aes (x=region, y=percent_avoid, fill=region)) +
   geom_segment(aes(x=region,xend=region,y=0,yend=percent_avoid)) +
-  geom_point(aes(colour="region",size=4) +
+  geom_point(aes(colour=region), size=4) +
+  ylim(0, 1) +
   theme_minimal() +
   scale_x_discrete(guide = guide_axis (n.dodge =2)) +
-  scale_fill_manual(labels = c("Africa", "Asia", "Europe", "Latin America & Carribbean", "Oceania"), 
-                    values = c("#CFE8F3", "#73BFE2", "#1696D2", "#0A4C6A", "#000000")) +
-                    labs(title = "Percentage of women (15-49 age group) in need/wanting to avoid pregnancy by region",
-                          caption ="Source: The Guttmacher Institute",
-                          x = "Region", y = "Percentage of women"))
-```
+  labs(title = "Percentage of Women(15-49 Age Group) in Need/Wanting to Avoid Pregnancy by Region",
+       caption ="Source: The Guttmacher Institute",
+       x = "Region", y = "Percentage of Women") 
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Graph 4: Percentage of women (15-49 age group) in need/wanting to avoid pregnancy 
+Latin America (followed by Europe) has the highest percentage of women who are in need and wanting to avoid pregnancy. This data point is important in understanding the extent to which contraceptive care needs are being met in different countries. Unwanted pregnancies increases the risk of complications and possibility of maternal deaths. It could also lead to poor outcomes such as poor health of the baby. African countries need to ensure that safe contraception methods are accessible and affordable for women of reproductive age.
+[Source: The Guttmacher Institute](osf.io/m85s9)
