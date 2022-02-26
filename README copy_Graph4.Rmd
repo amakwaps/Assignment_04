@@ -1,0 +1,72 @@
+---
+title: "Assignment_04"
+author: "Priyasha Chawla and Beryl Nana Ama Akuffo-Kwapong"
+date: "17/02/2022"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+
+```
+
+```{r include = FALSE}
+def.chunk.hook  <- knitr::knit_hooks$get("chunk")
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- def.chunk.hook(x, options)
+  ifelse(options$size != "normalsize", paste0("\n \\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
+})
+
+```
+
+\begin{center}
+\Huge{PPOL 670 | Assignment 04}
+
+\Huge{Data Visualization, Markdown, and Git}
+\end{center}
+
+\vspace{0.1in}
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(reshape2)
+library(forcats)
+library(dplyr)
+library(plotly)
+library(viridis)
+library(hrbrthemes)
+library(scales)
+
+library(httr)
+set_config(config(ssl_verifypeer = 0L))
+library(readxl)
+
+project <- read_excel("AIU All Women Dataset.xlsx")
+
+```
+
+```{r}
+#Graph 4
+#Creating a new variable - percentage of women in need/wanting to avoid pregnancy by region
+graph4 <- project %>%
+  mutate(percent_avoid= inneed/wra) %>%
+  group_by(region) %>%
+  summarize(percent_avoid = weighted.mean(percent_avoid))
+#Creates a lollipop graph showing percentage of women in need/wanting to avoid pregnancy by region
+ggplot(graph4, aes (x=region, y=percent_avoid, fill=region)) +
+  geom_segment(aes(x=region,xend=region,y=0,yend=percent_avoid)) +
+  geom_point(aes(colour=region), size=4) +
+  ylim(0, 1) +
+  theme_minimal() +
+  scale_x_discrete(guide = guide_axis (n.dodge =2)) +
+  labs(title = "Percentage of Women(15-49 Age Group) in Need/Wanting to Avoid Pregnancy by Region",
+       caption ="Source: The Guttmacher Institute",
+       x = "Region", y = "Percentage of Women") 
+```
+
+Graph 4: Percentage of women (15-49 age group) in need/wanting to avoid pregnancy 
+Latin America (followed by Europe) has the highest percentage of women who are in need and wanting to avoid pregnancy. This data point is important in understanding the extent to which contraceptive care needs are being met in different countries. Unwanted pregnancies increases the risk of complications and possibility of maternal deaths. It could also lead to poor outcomes such as poor health of the baby. African countries need to ensure that safe contraception methods are accessible and affordable for women of reproductive age.
