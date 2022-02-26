@@ -100,7 +100,7 @@ ggplot(graph2,aes(x = factor(continent), y = value, fill = series) ) +
 Graph 2:  Percentage of maternal deaths by cause and region
 
 This graph lists out the leading caused of maternal deaths in every region. The data will be instrumental in understanding what interventions are required to minimise maternal deaths in every region. For example, besides other indirect causes, the leading cause of maternal deaths in Africa and Asia is ectopic pregnancies. Ectopic pregnancies occur when a fertilised egg grows outside the uterus. The leading causes are hormonal and genetic abnormalities. Timely testing and preventive care in Africa could bring down number of maternal deaths caused by ectopic pregnancies. In Latin America, the leading cause is hypertension. Awareness programs on causes and care for women with pre-existing high blood pressure and kidney problems would be one plausible policy solution.Other indirect causes (maternal death aggravated by HIV/AIDS) is the leading cause of maternal deaths in Asia and Africa. This cause would need special policy attention.
-
+[Source: The Guttmacher Institute](osf.io/m85s9)
 
 ```{r}
 #Graph 3
@@ -128,3 +128,4 @@ graph3 %>%
 Graph 3: Cost to meet all needs per capita and current cost per capita by number of women in reproductive age and region
 
 In the case that interventions could reduce maternal deaths, we compare the current cost structures per capita(that is, how much is being spent on reproductive health care per person) with the cost structures if all needs (of contraceptive care, pregnancy, and new-born care) are met per person. Current per capita cost as well as cost when all needs are met are low for most countries in Europe and Asia. Interestingly, for most countries in Africa, the current cost per capita is on the higher end with some anomalies.
+[Source: The Guttmacher Institute](osf.io/m85s9)
