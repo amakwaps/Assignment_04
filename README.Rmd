@@ -2,29 +2,74 @@
 title: "Assignment_04"
 author: "Priyasha Chawla and Beryl Nana Ama Akuffo-Kwapong"
 date: "17/02/2022"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+
 ```
 
-## R Markdown
+```{r include = FALSE}
+def.chunk.hook  <- knitr::knit_hooks$get("chunk")
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- def.chunk.hook(x, options)
+  ifelse(options$size != "normalsize", paste0("\n \\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
+})
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
 ```
 
-## Including Plots
+\begin{center}
+\Huge{PPOL 670 | Assignment 04}
 
-You can also embed plots, for example:
+\Huge{Data Visualization, Markdown, and Git}
+\end{center}
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+\vspace{0.1in}
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(reshape2)
+library(forcats)
+library(dplyr)
+library(plotly)
+library(viridis)
+library(hrbrthemes)
+library(scales)
+
+library(httr)
+set_config(config(ssl_verifypeer = 0L))
+library(readxl)
+
+project <- read_excel("~/Desktop/Assignment_04/data/AIU All Women Dataset.xlsx")
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r}
+#Graph 3
+#Groups per capita cost when all needs are met and current cost per capita by number of women in reproductive age and region
+graph3 <- project %>%
+  select(country = country, continent = region, wra = wra, cc_cost_per_capita = curr_costs_percap, cost_to_meet_all_needs_percapita = all_costs_percap) %>%
+  group_by(continent) %>%
+  mutate_if(is.numeric, round, 2)
+#Creates a bar graph plotting per capita cost when all needs are met and current cost per capita by number of women in reproductive age and region
+graph3 %>%
+  ggplot(aes(x=cc_cost_per_capita, y=cost_to_meet_all_needs_percapita, size = wra, color = continent)) +
+  geom_point(alpha=0.99) +
+  labs(
+    color ="Continents",
+    title = "Total Current Cost Per Capita & Cost to Meet All Needs",
+    subtitle = "This shows the cost structure in all five regions",
+    caption = "Source: The Guttmacher Institute", 
+    x = " Per Capita Cost to Meet All Needs", y = "Per Capita Current Cost",
+  ) +
+  scale_size_continuous(name = "Number of Women in Reproductive Age",
+                        limits = c(1000, 100000),
+                        range = c(0, 5)) 
+```
+
