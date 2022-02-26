@@ -2,16 +2,10 @@
 title: "Assignment_04"
 author: "Priyasha Chawla and Beryl Nana Ama Akuffo-Kwapong"
 date: "17/02/2022"
-
+output:
+  html_document:
+    df_print: paged
 ---
-
-install.packages("tidyverse")
-install.packages("reshape2")
-install.packages("ggplot2")
-install.packages("dplyr")
-install.packages("plotly")
-install.packages("viridis")
-install.packages("hrbrthemes")
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(message = FALSE)
@@ -37,7 +31,6 @@ knitr::knit_hooks$set(chunk = function(x, options) {
 \vspace{0.1in}
 
 ```{r}
-
 library(tidyverse)
 library(ggplot2)
 library(reshape2)
@@ -50,21 +43,9 @@ library(scales)
 
 library(httr)
 set_config(config(ssl_verifypeer = 0L))
-
-```{r}
-library(readxl)
-project <- read_excel("~/Desktop/Assignment_04/AIU All Women Dataset.xlsx")
-View(AIU_All_Women_Dataset)
-
-#Graph 1: Total maternal deaths per 100,000 live births by region
-graph1 <- project %>%
-  group_by(region) %>%
-  summarise(weighted = weighted.mean(rate_matdeaths))
-graph1
-
 library(readxl)
 
-project <- read_excel("~/Desktop/Assignment_04/data/AIU All Women Dataset.xlsx")
+project <- read_excel("AIU All Women Dataset.xlsx")
 
 ```
 
@@ -76,7 +57,6 @@ graph1 <- project %>%
   summarise(weighted = weighted.mean(rate_matdeaths))
 
 #Creates a line plot which shows the rate of maternal deaths in each continent(region)
-
 graph1 %>%  
   ggplot(aes(x=region, y=weighted, group = 1)) +
   geom_point(size=3, colour = "red") +
@@ -86,6 +66,7 @@ graph1 %>%
        x = "Region", y = "Maternal deaths per 100,000 live births") +
   theme_minimal()
 ```
+
 
 Graph 1: Maternal deaths per 100,000 live births by region
 
@@ -140,10 +121,11 @@ ggplot(graph2,aes(x = factor(continent), y = value, fill = series) ) +
 
 ```
 
+
 Graph 2:  Percentage of maternal deaths by cause and region
 
 This graph lists out the leading caused of maternal deaths in every region. The data will be instrumental in understanding what interventions are required to minimise maternal deaths in every region. For example, besides other indirect causes, the leading cause of maternal deaths in Africa and Asia is ectopic pregnancies. Ectopic pregnancies occur when a fertilised egg grows outside the uterus. The leading causes are hormonal and genetic abnormalities. Timely testing and preventive care in Africa could bring down number of maternal deaths caused by ectopic pregnancies. In Latin America, the leading cause is hypertension. Awareness programs on causes and care for women with pre-existing high blood pressure and kidney problems would be one plausible policy solution.Other indirect causes (maternal death aggravated by HIV/AIDS) is the leading cause of maternal deaths in Asia and Africa. This cause would need special policy attention.
-[Source: The Guttmacher Institute](osf.io/m85s9)
+
 
 ```{r}
 #Graph 3
@@ -168,10 +150,11 @@ graph3 %>%
                         range = c(0, 5)) 
 ```
 
+
+
 Graph 3: Cost to meet all needs per capita and current cost per capita by number of women in reproductive age and region
 
 In the case that interventions could reduce maternal deaths, we compare the current cost structures per capita(that is, how much is being spent on reproductive health care per person) with the cost structures if all needs (of contraceptive care, pregnancy, and new-born care) are met per person. Current per capita cost as well as cost when all needs are met are low for most countries in Europe and Asia. Interestingly, for most countries in Africa, the current cost per capita is on the higher end with some anomalies.
-[Source: The Guttmacher Institute](osf.io/m85s9)
 
 
 ```{r}
@@ -195,4 +178,3 @@ ggplot(graph4, aes (x=region, y=percent_avoid, fill=region)) +
 
 Graph 4: Percentage of women (15-49 age group) in need/wanting to avoid pregnancy 
 Latin America (followed by Europe) has the highest percentage of women who are in need and wanting to avoid pregnancy. This data point is important in understanding the extent to which contraceptive care needs are being met in different countries. Unwanted pregnancies increases the risk of complications and possibility of maternal deaths. It could also lead to poor outcomes such as poor health of the baby. African countries need to ensure that safe contraception methods are accessible and affordable for women of reproductive age.
-[Source: The Guttmacher Institute](osf.io/m85s9)
